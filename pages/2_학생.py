@@ -7,6 +7,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 import json
 import os
+from dotenv import load_dotenv
 
 # 사이드바에 학생 페이지 콘텐츠 추가
 st.sidebar.title("학생 페이지")
