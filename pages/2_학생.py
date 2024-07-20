@@ -11,26 +11,13 @@ import os
 # 사이드바에 학생 페이지 콘텐츠 추가
 st.sidebar.title("학생 페이지")
 
-# google cloud 관련
-import os
-import json
-from dotenv import load_dotenv
-from google.oauth2 import service_account
+# 환경 변수에서 Google Cloud Credentials 로드
+google_cloud_credentials_json = os.getenv("GOOGLE_CLOUD_CREDENTIALS_JSON")
 
-# .env 파일에서 환경 변수 로드
-load_dotenv()
-
-# 환경 변수에서 JSON 문자열 불러오기
-google_cloud_credentials_json = os.getenv("GOOGLE_CLOUD_CREDENTIALS")
-
-# JSON 문자열을 딕셔너리로 변환
-google_cloud_credentials_dict = json.loads(google_cloud_credentials_json)
-
-# Google Cloud Credentials 설정
-credentials = service_account.Credentials.from_service_account_info(google_cloud_credentials_dict)
-
-# 이제 credentials 객체를 사용하여 Google Cloud 서비스에 인증할 수 있습니다.
-
+# 문자열로 변환 (이미 문자열인 경우에도 문제가 없음)
+if google_cloud_credentials_json:
+    google_cloud_credentials_dict = json.loads(str(google_cloud_credentials_json))
+    credentials = ServiceAccountCredentials.from_json_keyfile_dict(google_cloud_credentials_dict)
 
 # API KEY, THREAD, client 생성
 api_key = st.session_state['usingapikey']
