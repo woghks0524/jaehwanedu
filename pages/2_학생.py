@@ -12,13 +12,9 @@ from dotenv import load_dotenv
 # 사이드바에 학생 페이지 콘텐츠 추가
 st.sidebar.title("학생 페이지")
 
-# 환경 변수에서 Google Cloud Credentials 로드
-google_cloud_credentials_json = os.getenv("GOOGLE_CLOUD_CREDENTIALS_JSON")
-
-# 문자열로 변환 (이미 문자열인 경우에도 문제가 없음)
-if google_cloud_credentials_json:
-    google_cloud_credentials_dict = json.loads(str(google_cloud_credentials_json))
-    credentials = ServiceAccountCredentials.from_json_keyfile_dict(google_cloud_credentials_dict)
+google_cloud_credentials_json = st.secrets["google_cloud"]["credentials"]
+google_cloud_credentials_dict = json.loads(google_cloud_credentials_json)
+credentials = ServiceAccountCredentials.from_json_keyfile_dict(google_cloud_credentials_dict)
 
 # API KEY, THREAD, client 생성
 api_key = st.session_state['usingapikey']
