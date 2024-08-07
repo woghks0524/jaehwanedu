@@ -55,44 +55,44 @@ def home():
                      
             총 4단계로 이루어져 있습니다. 각 단계에 필요한 내용을 입력하고 다음 단계로 넘어가주세요.""")
 
-            st.info("""1. [평가 이름 정하기]:
-            - 선생님이 만드실 서술형 평가 이름을 입력한 뒤 등록 버튼을 눌러주세요.
-            - 학생 페이지에서 선생님이 만드신 평가를 불러오는 데 사용됩니다.""")
+            st.info("""1. [평가 코드 만들기]:
+- 선생님이 만든 서술형 평가의 평가 코드를 만든 뒤 등록 버튼을 눌러주세요.
+- 학생 페이지에서 선생님이 만든 평가를 불러오는 데 사용됩니다.""")
                      
             st.success("""2. [자료 입력하기]: 
-            - 서술형 평가에 활용할 수 있는 자료를 입력해 주세요. 
-            - 교과서 pdf, 수업 자료 pdf 등을 입력할 수 있습니다. 
-            - 입력한 자료를 근거로 모범 답안을 생성하거나 채점할 수 있습니다.""")
+- 서술형 평가에 활용할 수 있는 자료를 입력해 주세요. 
+- 교과서 pdf, 수업 자료 pdf 등을 입력할 수 있습니다. 
+- 입력한 자료를 근거로 모범 답안을 생성하거나 채점할 수 있습니다.""")
 
             st.error("""3. [평가 문항 및 주의사항 입력하기]: 
-            - 서술형 평가 문항과 모범답안(선택)을 입력하세요. 
-            - 최대 3개 문항까지 가능합니다. 
-            - 평가 주의사항을 입력할 수 있습니다. 
-            - 평가 주의사항을 근거로 채점 및 피드백을 생성할 수 있습니다.""")
+- 서술형 평가 문항과 모범답안(선택)을 입력하세요. 
+- 최대 3개 문항까지 가능합니다. 
+- 평가 주의사항을 입력할 수 있습니다. 
+- 평가 주의사항을 근거로 채점 및 피드백을 생성할 수 있습니다.""")
 
             st.warning("""4. [설정 확인 및 저장하기]: 
-            - 선생님이 만든 평가 설정를 확인하고 이를 저장합니다. 
-            - 수정이 필요하다면 수정이 필요한 부분으로 가서 다시 입력한 다음 저장합니다.""")
+- 선생님이 만든 평가 설정를 확인하고 이를 저장합니다. 
+- 수정이 필요하다면 수정이 필요한 부분으로 가서 다시 입력한 다음 저장합니다.""")
 
     st.button("다음 단계", on_click=next_page)
 
 # 단계 1
 def step1():
-    st.subheader("1단계. 평가 이름 정하기")
-    st.info("선생님이 만드실 평가 이름을 정해주세요. 학생 페이지에서 선생님이 만드신 평가를 불러오는 데 사용됩니다.")
+    st.subheader("1단계. 평가 코드 만들기")
+    st.info("선생님이 만든 평가를 찾기 위한 평가 코드를 만들어주세요. 학생 페이지에서 선생님이 만든 평가를 불러오는 데 사용됩니다.")
 
 # 평가 이름 입력
     with st.container(border=True):
-        st.caption("평가 이름")
-        settingname = st.text_input("평가 이름을 입력해주세요.")
+        st.caption("평가 코드")
+        settingname = st.text_input("평가 코드를 만들어주세요.")
 
 # 평가 이름 등록        
-        settingnameinput = st.button("평가 이름 등록")
+        settingnameinput = st.button("평가 코드 등록하기")
         if settingnameinput:
             st.session_state['settingname'] = settingname
             st.session_state['api_key'] = selected_api_key
             st.session_state['usingthread'] = new_thread.id
-            st.success("평가 이름이 성공적으로 등록되었습니다.")
+            st.success("평가 코드가 성공적으로 등록되었습니다.")
 
     st.write("---")
     col1, col2, col3 = st.columns([1, 1, 4])
@@ -115,7 +115,7 @@ def step2():
     with st.container(border=True):
         st.caption("자료")
         uploaded_file = st.file_uploader("", label_visibility="collapsed")
-        run_file_button = st.button('자료 등록')
+        run_file_button = st.button('자료 등록하기')
         if uploaded_file is not None and run_file_button:
             uploaded_file_response = client.files.create(
                 file=uploaded_file,
@@ -132,7 +132,7 @@ def step2():
             thread_message = client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content='벡터스토어 vs_FtRt7SEalipabRPrOk0usxl8을 file search하세요. vs_FtRt7SEalipabRPrOk0usxl8에 있는 파일 목록을 모두 보여주세요. 파일 목록 외에 아무 문장도 넣지 마세요. 줄 바꿈으로 해서 보기 쉽게 보여주세요.',
+                content='vectorstore vs_FtRt7SEalipabRPrOk0usxl8을 file search하세요. vectorstore vs_FtRt7SEalipabRPrOk0usxl8에 있는 파일 목록을 모두 보여주세요. 파일 목록 외에 아무 문장도 넣지 마세요. 파일 목록별로 줄을 바꾸어 보기 쉽게 나타내주세요.',
             )
             run = client.beta.threads.runs.create(
                 thread_id=st.session_state['usingthread'],
@@ -189,7 +189,7 @@ def step3():
             st.divider()
 
 # 문항 및 모범답안 등록
-        question_input_button = st.button('문항 및 모범답안 등록')
+        question_input_button = st.button('문항 및 모범답안 등록하기')
 
         if question_input_button:
             st.session_state['question1'] = question1
@@ -217,7 +217,7 @@ def step3():
         st.divider()
 
 # 평가 주의사항 등록
-        feedbackinstruction_input_button = st.button('평가 주의사항 등록')
+        feedbackinstruction_input_button = st.button('평가 주의사항 등록하기')
 
         if feedbackinstruction_input_button:
             st.session_state['feedbackinstruction'] = feedbackinstruction
@@ -242,16 +242,16 @@ def step4():
 # 설정 확인
     with st.container(border=True):
         st.caption("설정 확인하기")
-        testcheck = st.button("설정 확인")
+        testcheck = st.button("설정 확인하기")
 
         if testcheck:
             thread_message = client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content='평가 문항과 모범답안을 새롭게 등록합니다. 기존 평가 문항과 모범답안은 잊고 지금부터 입력한 것을 기억하세요. 1번 문항은 <' + st.session_state['question1'] +
-                '> 입니다. 사용자가 입력한 모범답안은 <' + st.session_state['correctanswer1'] +
-                ' 입니다. 2번 문항은 <' + st.session_state['question2'] + '> 입니다. 사용자가 입력한 모범답안은 <' + st.session_state['correctanswer2'] +
-                ' 입니다. 3번 문항은 <' + st.session_state['question3'] + '> 입니다. 사용자가 입력한 모범답안은 <' + st.session_state['correctanswer3'] + ' 입니다.'
+                content='평가 문항과 모범답안을 새롭게 등록합니다. 기존 평가 문항과 모범답안은 지우고 지금부터 입력한 것을 기억하세요. 1번 문항은 <' + st.session_state['question1'] +
+                '> 입니다. user(teacher)가 입력한 모범답안은 <' + st.session_state['correctanswer1'] +
+                ' 입니다. 2번 문항은 <' + st.session_state['question2'] + '> 입니다. user(teacher)가 입력한 모범답안은 <' + st.session_state['correctanswer2'] +
+                ' 입니다. 3번 문항은 <' + st.session_state['question3'] + '> 입니다. user(teacher)가 입력한 모범답안은 <' + st.session_state['correctanswer3'] + ' 입니다.'
             )
             thread_message = client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
@@ -261,7 +261,7 @@ def step4():
             thread_message = client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content='현재 업로드된 서술형 평가 문항과 모범답안을 모두 보여주세요. user(teacher)가 입력한 평가 문항을 그대로 보여주세요. 모범답안의 경우 user(teacher)가 입력한 것이 있으면 그것을 보여주고, 없으면 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 file search를 통해 모범답안을 만들어서 보여주세요. 어떤 파일 어떤 페이지를 보면 되는지 함께 보여주세요. 표 형태로 보여주세요. 반드시 서술형 평가 문항와 모범답안 외에 다른 문장을 넣지 마세요. 그리고 현재 업로드된 평가 주의사항을 모두 보여주세요. 반드시 평가 주의사항 외에 다른 문장을 넣지 마세요.'
+                content='현재 업로드된 서술형 평가 문항과 모범답안을 모두 보여주세요. user(teacher)가 입력한 평가 문항을 그대로 보여주세요. 모범답안의 경우 user(teacher)가 입력한 것이 있으면 그것을 보여주고, 없으면 vector store vs_FtRt7SEalipabRPrOk0usxl8 file search를 통해 문항과 관련된 내용을 찾아 모범답안을 만들어서 보여주세요. 만약 문항과 관련된 내용을 찾을 수 없다면 모범답안을 작성하지 않습니다. 절대 vector store에 없는 내용이나 수준 높은 내용으로 모범답안을 작성하지 않습니다. 어떤 파일 어떤 페이지를 보면 되는지 함께 보여주세요. 표 형태로 보여주세요. 반드시 서술형 평가 문항와 모범답안 외에 다른 문장을 넣지 마세요. 그리고 현재 업로드된 평가 주의사항을 모두 보여주세요. 반드시 평가 주의사항 외에 다른 문장을 넣지 마세요.'
             )
             run = client.beta.threads.runs.create(
                 thread_id=st.session_state['usingthread'],
@@ -286,7 +286,7 @@ def step4():
 # 설정 저장
     with st.container(border=True):
         st.caption("설정 저장하기")
-        savesetting = st.button("설정 저장")
+        savesetting = st.button("설정 저장하기")
 
         if savesetting:
             credentials_dict = json.loads(st.secrets["gcp"]["credentials"])
