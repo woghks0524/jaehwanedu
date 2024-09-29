@@ -289,77 +289,80 @@ def step3():
 
         feedback_output_button = st.button('채점 결과 확인하기')
         if feedback_output_button:
-            thread_message = client.beta.threads.messages.create(
-            thread_id=st.session_state['usingthread'],
-            role="user",
-            content='1번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점을 진행합니다. 모범답안과 비교해 학생 답안을 채점합니다. 반드시 업로드된 파일에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***평가 결과는 좀 더 큰 글씨로 빨간색으로 보여주세요. ***긍정적인 부분이나 개선 점은 보여주지 않고, 오직 채점 결과만 보여주세요.')
-
-            run = client.beta.threads.runs.create(
+            if 'question1' in st.session_state and st.session_state['question1']:
+                thread_message = client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
-                assistant_id=assistant_id)
+                role="user",
+                content='1번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점을 진행합니다. 모범답안과 비교해 학생 답안을 채점합니다. 반드시 업로드된 파일에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***평가 결과는 좀 더 큰 글씨로 빨간색으로 보여주세요. ***긍정적인 부분이나 개선 점은 보여주지 않고, 오직 채점 결과만 보여주세요.')
 
-            while True:
-                run = client.beta.threads.runs.retrieve(
+                run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],
-                    run_id=run.id)   
-                
-                if run.status == "completed":
-                    break
+                    assistant_id=assistant_id)
 
-                else:
-                    time.sleep(2)
+                while True:
+                    run = client.beta.threads.runs.retrieve(
+                        thread_id=st.session_state['usingthread'],
+                        run_id=run.id)   
+                    
+                    if run.status == "completed":
+                        break
 
-            thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
-            st.session_state['feedback1'] = thread_messages.data[0].content[0].text.value
+                    else:
+                        time.sleep(2)
 
-            thread_message = client.beta.threads.messages.create(
-            thread_id=st.session_state['usingthread'],
-            role="user",
-            content='2번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점을 진행합니다. 모범답안과 비교해 학생 답안을 채점합니다. 반드시 업로드된 파일에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***평가 결과는 좀 더 큰 글씨로 빨간색으로 보여주세요. ***긍정적인 부분이나 개선 점은 보여주지 않고, 오직 채점 결과만 보여주세요.')
+                thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
+                st.session_state['feedback1'] = thread_messages.data[0].content[0].text.value
 
-            run = client.beta.threads.runs.create(
+            if 'question2' in st.session_state and st.session_state['question2']:
+                thread_message2 = client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
-                assistant_id=assistant_id)
+                role="user",
+                content='2번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점을 진행합니다. 모범답안과 비교해 학생 답안을 채점합니다. 반드시 업로드된 파일에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***평가 결과는 좀 더 큰 글씨로 빨간색으로 보여주세요. ***긍정적인 부분이나 개선 점은 보여주지 않고, 오직 채점 결과만 보여주세요.')
 
-            while True:
-                run = client.beta.threads.runs.retrieve(
+                run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],
-                    run_id=run.id)
-                   
-                if run.status == "completed":
-                    break
+                    assistant_id=assistant_id)
 
-                else:
-                    time.sleep(2)
+                while True:
+                    run = client.beta.threads.runs.retrieve(
+                        thread_id=st.session_state['usingthread'],
+                        run_id=run.id)
+                    
+                    if run.status == "completed":
+                        break
 
-            thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
-            st.session_state['feedback2'] = thread_messages.data[0].content[0].text.value
+                    else:
+                        time.sleep(2)
 
-            thread_message = client.beta.threads.messages.create(
-            thread_id=st.session_state['usingthread'],
-            role="user",
-            content='3번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점을 진행합니다. 모범답안과 비교해 학생 답안을 채점합니다. 반드시 업로드된 파일에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***평가 결과는 좀 더 큰 글씨로 빨간색으로 보여주세요. ***긍정적인 부분이나 개선 점은 보여주지 않고, 오직 채점 결과만 보여주세요.')
+                thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
+                st.session_state['feedback2'] = thread_messages.data[0].content[0].text.value
 
-            run = client.beta.threads.runs.create(
+            if 'question3' in st.session_state and st.session_state['question3']:
+                client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
-                assistant_id=assistant_id)
+                role="user",
+                content='3번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점을 진행합니다. 모범답안과 비교해 학생 답안을 채점합니다. 반드시 업로드된 파일에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***평가 결과는 좀 더 큰 글씨로 빨간색으로 보여주세요. ***긍정적인 부분이나 개선 점은 보여주지 않고, 오직 채점 결과만 보여주세요.')
 
-            while True:
-                run = client.beta.threads.runs.retrieve(
+                run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],
-                    run_id=run.id)   
-                
-                if run.status == "completed":
-                    break
+                    assistant_id=assistant_id)
 
-                else:
-                    time.sleep(2)
+                while True:
+                    run = client.beta.threads.runs.retrieve(
+                        thread_id=st.session_state['usingthread'],
+                        run_id=run.id)   
+                    
+                    if run.status == "completed":
+                        break
 
-            thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
-            st.session_state['feedback3'] = thread_messages.data[0].content[0].text.value
+                    else:
+                        time.sleep(2)
+
+                thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
+                st.session_state['feedback3'] = thread_messages.data[0].content[0].text.value
 
 # 예시: 채점 결과 부분만 빨간색으로 표시
-            st.text(st.session_state['feedback1'])
+            st.write(st.session_state['feedback1'])
             st.write(st.session_state['feedback2'])
             st.write(st.session_state['feedback3'])
 
