@@ -363,7 +363,9 @@ def step3():
 
 # 예시: 채점 결과 부분만 빨간색으로 표시
             st.write(st.session_state['feedback1'])
+            st.divider()
             st.write(st.session_state['feedback2'])
+            st.divider()
             st.write(st.session_state['feedback3'])
 
 # 학생 의견 작성 
