@@ -359,10 +359,9 @@ def step3():
             st.session_state['feedback3'] = thread_messages.data[0].content[0].text.value
 
 # 예시: 채점 결과 부분만 빨간색으로 표시
-            st.markdown(f"1번 문항에 대한 채점 결과: <span style='color:red; font-size:20px;'> {st.session_state['feedback1']} </span>", unsafe_allow_html=True)
-            st.markdown(f"2번 문항에 대한 채점 결과: <span style='color:red; font-size:20px;'> {st.session_state['feedback2']} </span>", unsafe_allow_html=True)
-            st.markdown(f"3번 문항에 대한 채점 결과: <span style='color:red; font-size:20px;'> {st.session_state['feedback3']} </span>", unsafe_allow_html=True)
-
+            st.text(st.session_state['feedback1'])
+            st.write(st.session_state['feedback2'])
+            st.write(st.session_state['feedback3'])
 
 # 학생 의견 작성 
     with st.container(border=True):
