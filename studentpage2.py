@@ -15,7 +15,7 @@ import json
 api_keys = st.secrets["api"]["keys"]
 selected_api_key = random.choice(api_keys)
 client = OpenAI(api_key=selected_api_key)
-assistant_id = 'asst_2FrZmOonHQCPO6EhXzQ6u3nr'
+assistant_id = 'asst_R4ZpxD9c27ImT641ttLM7m0G'
 new_thread = client.beta.threads.create()
 
 # 화면 페이키 크기 설정
@@ -248,14 +248,20 @@ def step3():
         st.caption("답안 작성")
         st.error("서술형 문항을 잘 읽고 답안을 입력하세요. 답안을 입력한 뒤 등록 버튼을 눌러주세요.")
 
-        if 'question1'in st.session_state and st.session_state['question1']:
+        if 'question1' in st.session_state and st.session_state['question1']:
             answer1 = st.text_area("1번 문항: " + st.session_state['question1'], height=100)
+        else:
+            answer1 = None
 
-        if 'question2'in st.session_state and st.session_state['question2']:
+        if 'question2' in st.session_state and st.session_state['question2']:
             answer2 = st.text_area("2번 문항: " + st.session_state['question2'], height=100)
+        else:
+            answer2 = None
 
-        if 'question3'in st.session_state and st.session_state['question3']:
+        if 'question3' in st.session_state and st.session_state['question3']:
             answer3 = st.text_area("3번 문항: " + st.session_state['question3'], height=100)
+        else:
+            answer3 = None
 
 # 답안 등록
         answer_input_button = st.button('작성 답안 등록하기')
@@ -352,9 +358,11 @@ def step3():
             thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
             st.session_state['feedback3'] = thread_messages.data[0].content[0].text.value
 
-            st.write(st.session_state['feedback1'])
-            st.write(st.session_state['feedback2'])
-            st.write(st.session_state['feedback3'])
+# 예시: 채점 결과 부분만 빨간색으로 표시
+            st.markdown(f"1번 문항에 대한 채점 결과: <span style='color:red; font-size:20px;'> {st.session_state['feedback1']} </span>", unsafe_allow_html=True)
+            st.markdown(f"2번 문항에 대한 채점 결과: <span style='color:red; font-size:20px;'> {st.session_state['feedback2']} </span>", unsafe_allow_html=True)
+            st.markdown(f"3번 문항에 대한 채점 결과: <span style='color:red; font-size:20px;'> {st.session_state['feedback3']} </span>", unsafe_allow_html=True)
+
 
 # 학생 의견 작성 
     with st.container(border=True):
