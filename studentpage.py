@@ -121,7 +121,7 @@ def step1():
         gc = gspread.authorize(credentials)
 
 # 스프레드시트 열기
-        spreadsheet = gc.open(st.secrets["google"]["서술형 평가 데이터"])
+        spreadsheet = gc.open(st.secrets["google"]["spreadsheet_name"])
         worksheet = spreadsheet.sheet1
 
 # 특정 설정 이름 입력
