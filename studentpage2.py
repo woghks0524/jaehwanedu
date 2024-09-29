@@ -93,7 +93,7 @@ def home():
         st.error("""3. [답안 작성 및 결과 확인하기]:            
 - 서술형 문항을 잘 읽고 답안을 입력하세요. 문항이 보이지 않는 경우 문제가 3개보다 적은 경우입니다.
 - 답안을 입력한 뒤 등록 버튼을 눌러주세요.         
-- 채점 및 피드백 생성 버튼을 누르면 내가 입력한 답안에 대한 채점 결과를 볼 수 있습니다.        
+- 채점 결과 확인하기 버튼을 누르면 내가 입력한 답안에 대한 채점 결과를 볼 수 있습니다.        
 - 전체적인 서술형 평가 연습 과정과 채점 결과에 대한 소감과 느낀점을 남길 수 있습니다. 의견을 입력한 뒤 등록 버튼을 눌러주세요.          
 - 마지막으로 저장 버튼을 누르면 서술형 평가 연습 결과가 저장됩니다.""")
 
@@ -170,7 +170,7 @@ def step1():
                 thread_message = client.beta.threads.messages.create(
                     thread_id=st.session_state['usingthread'],
                     role="user",
-                    content='평가 주의사항은 <' + st.session_state['feedbackinstruction'] + '> 입니다. 피드백을 제공할 때 위 내용을 고려해서 작성해주시기 바랍니다.'
+                    content='평가 주의사항은 <' + st.session_state['feedbackinstruction'] + '> 입니다. 채점 결과를 제공할 때 위 내용을 고려해서 작성해주시기 바랍니다.'
                 )
 
                 thread_message = client.beta.threads.messages.create(
@@ -198,7 +198,6 @@ def step1():
 
                 thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
                 msg = thread_messages.data[0].content[0].text.value
-                st.write(msg)
 
         st.write("---")
         col1, col2, col3 = st.columns([1, 1, 4])
@@ -279,15 +278,15 @@ def step3():
 
 # 채점 및 피드백 생성 
     with st.container(border=True):
-        st.caption("채점 및 피드백 결과")
-        st.error("채점 및 피드백 생성 버튼을 누르면 내가 입력한 답안에 대한 채점 결과와 피드백을 볼 수 있습니다.")
+        st.caption("채점 결과")
+        st.error("채점 결과 버튼을 누르면 내가 입력한 답안에 대한 채점 결과를 확인할 수 있습니다.")
 
-        feedback_output_button = st.button('채점 및 피드백 결과 확인하기')
+        feedback_output_button = st.button('채점 결과 확인하기')
         if feedback_output_button:
             thread_message = client.beta.threads.messages.create(
             thread_id=st.session_state['usingthread'],
             role="user",
-            content='1번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점을 진행합니다. 모범답안과 비교해 학생 답안을 채점합니다. 반드시 업로드된 파일에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. 평가 결과는 좀 더 큰 글씨로 빨간색으로 보여주세요.')
+            content='1번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점을 진행합니다. 모범답안과 비교해 학생 답안을 채점합니다. 반드시 업로드된 파일에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***평가 결과는 좀 더 큰 글씨로 빨간색으로 보여주세요. ***긍정적인 부분이나 개선 점은 보여주지 않고, 오직 채점 결과만 보여주세요.')
 
             run = client.beta.threads.runs.create(
                 thread_id=st.session_state['usingthread'],
@@ -310,7 +309,7 @@ def step3():
             thread_message = client.beta.threads.messages.create(
             thread_id=st.session_state['usingthread'],
             role="user",
-            content='2번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점을 진행합니다. 모범답안과 비교해 학생 답안을 채점합니다. 반드시 업로드된 파일에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. 평가 결과는 좀 더 큰 글씨로 빨간색으로 보여주세요.')
+            content='2번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점을 진행합니다. 모범답안과 비교해 학생 답안을 채점합니다. 반드시 업로드된 파일에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***평가 결과는 좀 더 큰 글씨로 빨간색으로 보여주세요. ***긍정적인 부분이나 개선 점은 보여주지 않고, 오직 채점 결과만 보여주세요.')
 
             run = client.beta.threads.runs.create(
                 thread_id=st.session_state['usingthread'],
@@ -333,7 +332,7 @@ def step3():
             thread_message = client.beta.threads.messages.create(
             thread_id=st.session_state['usingthread'],
             role="user",
-            content='3번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점을 진행합니다. 모범답안과 비교해 학생 답안을 채점합니다. 반드시 업로드된 파일에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. 평가 결과는 좀 더 큰 글씨로 빨간색으로 보여주세요.')
+            content='3번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점을 진행합니다. 모범답안과 비교해 학생 답안을 채점합니다. 반드시 업로드된 파일에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***평가 결과는 좀 더 큰 글씨로 빨간색으로 보여주세요. ***긍정적인 부분이나 개선 점은 보여주지 않고, 오직 채점 결과만 보여주세요.')
 
             run = client.beta.threads.runs.create(
                 thread_id=st.session_state['usingthread'],
@@ -360,7 +359,7 @@ def step3():
 # 학생 의견 작성 
     with st.container(border=True):
         st.caption("소감 및 느낀점")
-        st.error("전체적인 평가 연습 과정과 채점 및 피드백 결과에 대한 의견을 적어주세요. 결과에 대해 궁금한 점이나 이해가 가지 않는 부분, 혹은 단순한 소감이나 느낀점도 좋습니다. 의견을 입력한 뒤 등록 버튼을 눌러주세요. ")
+        st.error("전체적인 평가 연습 과정과 채점 결과에 대한 의견을 적어주세요. 결과에 대해 궁금한 점이나 이해가 가지 않는 부분, 혹은 단순한 소감이나 느낀점도 좋습니다. 의견을 입력한 뒤 등록 버튼을 눌러주세요. ")
 
         studentopinion = st.text_area("", label_visibility="collapsed")
         studentopinionbutton = st.button("소감 및 느낀점 등록하기")
