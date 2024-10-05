@@ -158,9 +158,9 @@ def step2():
         vectorstoreid = 'vs_FtRt7SEalipabRPrOk0usxl8'
 
 # 새로운 벡터 스토어 생성
-        if st.button("새로운 벡터 스토어 생성"):
+        if st.button("새로운 자료 저장소 생성"):
             newvectorstore = client.beta.vector_stores.create(name="새로운 벡터 스토어")
-            newvectorstoreid = newvectorstore.id  # 객체의 id 속성에 접근
+            newvectorstoreid = newvectorstore.id
             st.session_state['vectorstoreid'] = newvectorstoreid
 
 # 새로운 벡터 스토어를 기존 어시스턴트에 업데이트
@@ -182,7 +182,7 @@ def step2():
                     )
                     time.sleep(1)  # 각 파일 복사 후 잠깐 대기
 
-                st.success("모든 파일이 새 벡터 스토어로 성공적으로 복사되었습니다.")
+                st.success("모든 파일이 새로운 자료 저장소로 성공적으로 복사되었습니다.")
             else:
                 st.error("파일 목록을 가져오지 못했습니다.")
 
