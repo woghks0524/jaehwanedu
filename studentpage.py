@@ -1,3 +1,6 @@
+# 5학년 5반
+# 채점 결과와 함께 피드백을 제공함.
+
 # 라이브러리
 import streamlit as st
 from openai import OpenAI
@@ -7,6 +10,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 import random
 import json
+import re
 
 # API KEY, THREAD, client 생성
 api_keys = st.secrets["api"]["keys"]
@@ -17,6 +21,16 @@ new_thread = client.beta.threads.create()
 
 # 화면 페이키 크기 설정
 st.set_page_config(layout="wide")
+
+# CSS 스타일을 사용하여 상단바와 메뉴 숨기기
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            header {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # 세션 상태 초기화
 if 'page' not in st.session_state:
@@ -55,8 +69,16 @@ if 'feedback2' not in st.session_state:
     st.session_state['feedback2'] = ''
 if 'feedback3' not in st.session_state:
     st.session_state['feedback3'] = ''
-if 'studentopinion' not in st.session_state:
-    st.session_state['studentopinion'] = ''
+if 'studentopinion1' not in st.session_state:
+    st.session_state['studentopinion1'] = ''
+if 'studentopinion2' not in st.session_state:
+    st.session_state['studentopinion2'] = ''
+if 'score1' not in st.session_state:
+    st.session_state['score1'] = ''
+if 'score2' not in st.session_state:
+    st.session_state['score2'] = ''
+if 'score3' not in st.session_state:
+    st.session_state['score3'] = ''
 
 # 페이지 전환 함수 정의
 def next_page():
@@ -80,19 +102,19 @@ def home():
         총 3단계로 이루어져 있습니다. 차례대로 다음 단계로 넘어가주세요.""")
 
         st.info("""1. [평가 코드 입력하기]:           
-- 선생님이 알려주신 평가 코드를 입력한 뒤 등록 버튼을 눌러주세요.
+- 선생님이 알려주신 평가 코드를 입력한 뒤 '평가 코드 확인하기' 버튼을 눌러주세요.
 - 평가 코드를 입력해야 다음 단계로 넘어갈 수 있습니다.""")
                     
         st.success("""2. [정보 입력하기]:           
-- 반, 번호, 이름을 입력한 뒤 등록 버튼을 눌러주세요. 
+- 반, 번호, 이름을 입력한 뒤 '학생 정보 등록하기' 버튼을 눌러주세요. 
 - 정보를 입력해야 다음 단계로 넘어갈 수 있습니다.""")
 
         st.error("""3. [답안 작성 및 결과 확인하기]:            
-- 서술형 문항을 잘 읽고 답안을 입력하세요. 문항이 보이지 않는 경우 문제가 3개보다 적은 경우입니다.
-- 답안을 입력한 뒤 등록 버튼을 눌러주세요.         
-- 채점 및 피드백 생성 버튼을 누르면 내가 입력한 답안에 대한 채점 결과와 피드백을 볼 수 있습니다.        
-- 전체적인 평가 연습 과정과 피드백 결과에 대한 소감과 느낀점을 남길 수 있습니다. 의견을 입력한 뒤 등록 버튼을 눌러주세요.          
-- 마지막으로 저장 버튼을 누르면 서술형 평가 연습 결과가 저장됩니다.""")
+- 서술형 문항을 잘 읽고 답안을 작성하세요.
+- 답안을 작성한 뒤 '작성 답안 등록하기' 버튼을 눌러주세요.         
+- '채점 결과 및 피드백 확인하기' 버튼을 누르면 내가 작성한 답안에 대한 채점 결과와 피드백을 확인할 수 있습니다.        
+- 전체적인 서술형 평가 연습 과정과 채점 결과 및 피드백에 대한 소감과 느낀점을 남길 수 있습니다. 의견을 입력한 뒤 '소감 및 느낀점 등록하기' 버튼을 눌러주세요.          
+- 마지막으로 '서술형 평가 연습 결과 저장하기' 버튼을 누르면 결과가 저장됩니다.""")
 
     st.write("---")
     col1, col2, col3 = st.columns([1, 1, 4])
@@ -108,7 +130,7 @@ def home():
 
 def step1():
     st.subheader("1단계. 평가 코드 입력하기")
-    st.info("선생님이 알려주신 평가 코드를 입력한 뒤 확인 버튼을 눌러주세요. 평가 코드를 입력해야 다음 단계로 넘어갈 수 있습니다.")
+    st.info("선생님이 알려주신 평가 코드를 입력한 뒤 '평가 코드 확인하기' 버튼을 눌러주세요. 평가 코드를 입력해야 다음 단계로 넘어갈 수 있습니다.")
 
     with st.container(border=True):
         st.caption("평가코드")
@@ -153,50 +175,6 @@ def step1():
             else:
                 st.warning("평가 코드에 해당하는 데이터를 찾을 수 없습니다. 평가 코드를 확인해주세요.")
 
-# 어시스턴트와 대화 생성
-            if 'question1' in st.session_state and 'correctanswer1' in st.session_state:
-                thread_message = client.beta.threads.messages.create(
-                thread_id=st.session_state['usingthread'],
-                role="user",
-                content='평가 문항과 모범답안을 새롭게 등록합니다. 기존 평가 문항과 모범답안은 지우고 지금부터 입력한 것을 기억하세요. 1번 문항은 <' + st.session_state['question1'] +
-                '> 입니다. user(teacher)가 입력한 모범답안은 <' + st.session_state['correctanswer1'] +
-                ' 입니다. 2번 문항은 <' + st.session_state['question2'] + '> 입니다. user(teacher)가 입력한 모범답안은 <' + st.session_state['correctanswer2'] +
-                ' 입니다. 3번 문항은 <' + st.session_state['question3'] + '> 입니다. user(teacher)가 입력한 모범답안은 <' + st.session_state['correctanswer3'] + ' 입니다.'
-                )
-                
-                thread_message = client.beta.threads.messages.create(
-                    thread_id=st.session_state['usingthread'],
-                    role="user",
-                    content='평가 주의사항은 <' + st.session_state['feedbackinstruction'] + '> 입니다. 피드백을 제공할 때 위 내용을 고려해서 작성해주시기 바랍니다.'
-                )
-
-                thread_message = client.beta.threads.messages.create(
-                    thread_id=st.session_state['usingthread'],
-                    role="user",
-                    content='현재 업로드된 서술형 평가 문항과 모범답안을 모두 보여주세요. user(teacher)가 입력한 평가 문항을 그대로 보여주세요. 모범답안의 경우 user(teacher)가 입력한 것이 있으면 그것을 보여주고, 없으면 vector store vs_FtRt7SEalipabRPrOk0usxl8 file search를 통해 문항과 관련된 내용을 찾아 모범답안을 만들어서 보여주세요. 만약 문항과 관련된 내용을 찾을 수 없다면 모범답안을 작성하지 않습니다. 절대 vector store에 없는 내용이나 수준 높은 내용으로 모범답안을 작성하지 않습니다. 어떤 파일 어떤 페이지를 보면 되는지 함께 보여주세요. 표 형태로 보여주세요. 반드시 서술형 평가 문항와 모범답안 외에 다른 문장을 넣지 마세요. 그리고 현재 업로드된 평가 주의사항을 모두 보여주세요. 반드시 평가 주의사항 외에 다른 문장을 넣지 마세요.'
-                )
-
-                run = client.beta.threads.runs.create(
-                    thread_id=st.session_state['usingthread'],
-                    assistant_id=assistant_id
-                )
-
-                run_id = run.id
-
-                while True:
-                    run = client.beta.threads.runs.retrieve(
-                        thread_id=st.session_state['usingthread'],
-                        run_id=run_id
-                    )
-                    if run.status == "completed":
-                        break
-                    else:
-                        time.sleep(2)
-
-                thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
-                msg = thread_messages.data[0].content[0].text.value
-                st.write(msg)
-
         st.write("---")
         col1, col2, col3 = st.columns([1, 1, 4])
 
@@ -212,7 +190,7 @@ def step1():
 def step2():
 # 학생 정보 입력
     st.subheader("2단계. 정보 입력하기")
-    st.success("반, 번호, 이름을 입력한 뒤 등록 버튼을 눌러주세요. 정보를 입력해야 다음 단계로 넘어갈 수 있습니다.")
+    st.success("반, 번호, 이름을 입력한 뒤 '학생 정보 등록하기' 버튼을 눌러주세요. 정보를 입력해야 다음 단계로 넘어갈 수 있습니다.")
 
     with st.container(border=True):
         st.caption("반, 번호, 이름 정보")
@@ -244,131 +222,162 @@ def step3():
 
     with st.container(border=True):
         st.caption("답안 작성")
-        st.error("서술형 문항을 잘 읽고 답안을 입력하세요. 답안을 입력한 뒤 등록 버튼을 눌러주세요.")
+        st.error("서술형 문항을 잘 읽고 답안을 작성하세요. 답안을 작성한 뒤 '작성 답안 등록하기' 버튼을 눌러주세요.")
 
-        if 'question1'in st.session_state and st.session_state['question1']:
+        if 'question1' in st.session_state and st.session_state['question1']:
             answer1 = st.text_area("1번 문항: " + st.session_state['question1'], height=100)
+        else:
+            answer1 = None
 
-        if 'question2'in st.session_state and st.session_state['question2']:
+        if 'question2' in st.session_state and st.session_state['question2']:
             answer2 = st.text_area("2번 문항: " + st.session_state['question2'], height=100)
+        else:
+            answer2 = None
 
-        if 'question3'in st.session_state and st.session_state['question3']:
+        if 'question3' in st.session_state and st.session_state['question3']:
             answer3 = st.text_area("3번 문항: " + st.session_state['question3'], height=100)
+        else:
+            answer3 = None
 
 # 답안 등록
-            answer_input_button = st.button('작성 답안 등록하기')
-            if answer1 is not None:
-                st.session_state['answer1'] = answer1
-            if answer2 is not None:
-                st.session_state['answer2'] = answer2
-            if answer3 is not None:
-                st.session_state['answer3'] = answer3
+        answer_input_button = st.button('작성 답안 등록하기')
+        if answer1 is not None:
+            st.session_state['answer1'] = answer1
+        if answer2 is not None:
+            st.session_state['answer2'] = answer2
+        if answer3 is not None:
+            st.session_state['answer3'] = answer3
 
-            if answer_input_button:
-                thread_message = client.beta.threads.messages.create(
-                thread_id=st.session_state['usingthread'],
-                role="user",
-                content='1번 문항에 대한 학생 답안은 <' + st.session_state['answer1'] + 
-                '> 입니다. 2번 문항에 대한 학생 답안은 <' + st.session_state['answer2'] + 
-                '> 입니다. 3번 문항에 대한 학생 답안은 <' + st.session_state['answer3'] +'> 입니다.')
+        if answer_input_button:
+            client.beta.threads.messages.create(
+            thread_id=st.session_state['usingthread'],
+            role="user",
+            content='1번 문항에 대한 학생 답안은 <' + st.session_state['answer1'] + 
+            '> 입니다. 2번 문항에 대한 학생 답안은 <' + st.session_state['answer2'] + 
+            '> 입니다. 3번 문항에 대한 학생 답안은 <' + st.session_state['answer3'] +'> 입니다.')
 
-                st.success('작성한 답안이 성공적으로 등록되었습니다.')
+            st.success('작성한 답안이 성공적으로 등록되었습니다.')
 
 # 채점 및 피드백 생성 
     with st.container(border=True):
-        st.caption("채점 및 피드백 결과")
-        st.error("채점 및 피드백 생성 버튼을 누르면 내가 입력한 답안에 대한 채점 결과와 피드백을 볼 수 있습니다.")
+        st.caption("채점 결과 및 피드백")
+        st.error("'채점 결과 및 피드백 확인하기' 버튼을 누르면 내가 작성한 답안에 대한 채점 결과와 피드백을 확인할 수 있습니다.")
 
-        feedback_output_button = st.button('채점 및 피드백 결과 확인하기')
+# 피드백에서 1~4점 범위의 점수를 추출하는 함수
+        def extract_score(feedback_text):
+
+# "1점", "2점", "3점", "4점" 형식으로 점수를 추출하는 정규 표현식
+            score_pattern = r'([1-4])점'
+            match = re.search(score_pattern, feedback_text)
+            
+            if match:
+                return int(match.group(1))
+            return None
+
+        feedback_output_button = st.button('채점 결과 및 피드백 확인하기')
         if feedback_output_button:
-            thread_message = client.beta.threads.messages.create(
-            thread_id=st.session_state['usingthread'],
-            role="user",
-            content='벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점 및 피드백을 진행합니다. 모범답안과 비교해 학생 답안을 채점하고 적절한 피드백을 제공합니다. 반드시 업로드된 파일에 근거하여 채점 및 피드백을 진행합니다. 1번 문항에 대한 학생 답안을 보고 채점 및 피드백을 생성해주세요. 평가 문항, 학생 답안, 채점 결과 및 피드백이 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항는 보여주지 않습니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과, 피드백 내용을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요.')
-
-            run = client.beta.threads.runs.create(
+            if 'question1' in st.session_state and st.session_state['question1']:
+                client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
-                assistant_id=assistant_id)
+                role="user",
+                content='1번 문항에 대한 학생 답안을 보고 채점 및 피드백을 생성해주세요. **instructions에 나와 있는 대로 생성합니다. 학생이 입력한 답안, 채점 결과, 피드백 내용을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. 【5:12†source】처럼 생긴 참조는 아예 보이지 않게 해주세요.')
 
-            while True:
-                run = client.beta.threads.runs.retrieve(
+                run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],
-                    run_id=run.id)   
-                
-                if run.status == "completed":
-                    break
+                    assistant_id=assistant_id)
 
-                else:
-                    time.sleep(2)
+                while True:
+                    run = client.beta.threads.runs.retrieve(
+                        thread_id=st.session_state['usingthread'],
+                        run_id=run.id)   
+                    
+                    if run.status == "completed":
+                        break
 
-            thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
-            st.session_state['feedback1'] = thread_messages.data[0].content[0].text.value
+                    else:
+                        time.sleep(2)
 
-            thread_message = client.beta.threads.messages.create(
-            thread_id=st.session_state['usingthread'],
-            role="user",
-            content='2번 문항에 대한 학생 답안을 보고 채점 및 피드백을 생성해주세요. 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점 및 피드백을 진행합니다. 모범답안과 비교해 학생 답안을 채점하고 적절한 피드백을 제공합니다. 반드시 업로드된 파일에 근거하여 채점 및 피드백을 진행합니다. 평가 문항, 학생 답안, 채점 결과 및 피드백이 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과, 피드백 내용을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요.')
+                thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
+                st.session_state['feedback1'] = thread_messages.data[0].content[0].text.value
+                st.session_state['score1'] = extract_score(st.session_state['feedback1'])
 
-            run = client.beta.threads.runs.create(
+            if 'question2' in st.session_state and st.session_state['question2']:
+                client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
-                assistant_id=assistant_id)
+                role="user",
+                content='2번 문항에 대한 학생 답안을 보고 채점 및 피드백을 생성해주세요. **instructions에 나와 있는 대로 생성합니다. 학생이 입력한 답안, 채점 결과, 피드백 내용을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. 【5:12†source】처럼 생긴 참조는 아예 보이지 않게 해주세요.')
+                # content='2번 문항에 대한 학생 답안을 보고 채점 및 피드백을 생성해주세요. 벡터 스토어를 검색해서 모든 파일 내용을 확인한 뒤, 학생 답안을 채점하고 및 피드백을 생성합니다. **피드백을 생성할 때는 반드시 instructions에 나와 있는 대로 생성합니다.** 모범답안과 비교하여 학생 답안을 채점하고 적절한 피드백을 제공합니다. 반드시 업로드된 파일 내용에 근거하여 채점 및 피드백을 진행합니다. 평가 문항, 학생 답안, 채점 결과 및 피드백이 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항는 보여주지 않습니다. 표 형식으로 보여주지 말고, **학생이 입력한 답안, 평가 결과, 피드백 내용을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. **참조 링크 없이, 파일에 적혀 있는 페이지 번호를 있는 그대로 보여주세요. "쪽" 이라는 단어를 사용합니다. 반드시 벡터 스토어에 있는 파일 내용으로 모범답안을 작성해야 합니다. 반드시 벡터 스토어에 있는 파일 수준으로 모범답안을 작성해야 합니다. 벡터 스토어를 검색했을 때 여러 파일에서 관련된 내용을 찾을 수 있다면 여러 파일의 내용을 종합적으로 활용합니다. ** 어떤 파일에서 어떤 페이지를 보면 되는지 함께 보여주세요. 이때, 반드시 파일 이름과 함께 **그 파일 안에 적혀있는 페이지 숫자**를 보여주어야 합니다.')
 
-            while True:
-                run = client.beta.threads.runs.retrieve(
+                run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],
-                    run_id=run.id)
-                   
-                if run.status == "completed":
-                    break
+                    assistant_id=assistant_id)
 
-                else:
-                    time.sleep(2)
+                while True:
+                    run = client.beta.threads.runs.retrieve(
+                        thread_id=st.session_state['usingthread'],
+                        run_id=run.id)
+                    
+                    if run.status == "completed":
+                        break
 
-            thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
-            st.session_state['feedback2'] = thread_messages.data[0].content[0].text.value
+                    else:
+                        time.sleep(2)
 
-            thread_message = client.beta.threads.messages.create(
-            thread_id=st.session_state['usingthread'],
-            role="user",
-            content='3번 문항에 대한 학생 답안을 보고 채점 및 피드백을 생성해주세요. 벡터 스토어 vs_FtRt7SEalipabRPrOk0usxl8 파일 서치해서 업로드된 파일을 확인한 다음 채점 및 피드백을 진행합니다. 모범답안과 비교해 학생 답안을 채점하고 적절한 피드백을 제공합니다. 반드시 업로드된 파일에 근거하여 채점 및 피드백을 진행합니다. 평가 문항, 학생 답안, 채점 결과 및 피드백이 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 표 형식으로 보여주지 말고, 학생이 입력한 답안과 평가 결과, 피드백 내용을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요.')
+                thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
+                st.session_state['feedback2'] = thread_messages.data[0].content[0].text.value
+                st.session_state['score2'] = extract_score(st.session_state['feedback2'])
 
-            run = client.beta.threads.runs.create(
+            if 'question3' in st.session_state and st.session_state['question3']:
+                client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
-                assistant_id=assistant_id)
+                role="user",
+                content='3번 문항에 대한 학생 답안을 보고 채점 및 피드백을 생성해주세요. 벡터 스토어를 검색해서 모든 파일 내용을 확인한 뒤, 학생 답안을 채점하고 및 피드백을 생성합니다. **피드백을 생성할 때는 반드시 instructions에 나와 있는 대로 생성합니다.** 모범답안과 비교하여 학생 답안을 채점하고 적절한 피드백을 제공합니다. 반드시 업로드된 파일 내용에 근거하여 채점 및 피드백을 진행합니다. 평가 문항, 학생 답안, 채점 결과 및 피드백이 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항는 보여주지 않습니다. 표 형식으로 보여주지 말고, **학생이 입력한 답안, 평가 결과, 피드백 내용을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. **참조 링크 없이, 파일에 적혀 있는 페이지 번호를 있는 그대로 보여주세요. "쪽" 이라는 단어를 사용합니다. 반드시 벡터 스토어에 있는 파일 내용으로 모범답안을 작성해야 합니다. 반드시 벡터 스토어에 있는 파일 수준으로 모범답안을 작성해야 합니다. 벡터 스토어를 검색했을 때 여러 파일에서 관련된 내용을 찾을 수 있다면 여러 파일의 내용을 종합적으로 활용합니다. ** 어떤 파일에서 어떤 페이지를 보면 되는지 함께 보여주세요. 이때, 반드시 파일 이름과 함께 **그 파일 안에 적혀있는 페이지 숫자**를 보여주어야 합니다.')
 
-            while True:
-                run = client.beta.threads.runs.retrieve(
+                run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],
-                    run_id=run.id)   
-                
-                if run.status == "completed":
-                    break
+                    assistant_id=assistant_id)
 
-                else:
-                    time.sleep(2)
+                while True:
+                    run = client.beta.threads.runs.retrieve(
+                        thread_id=st.session_state['usingthread'],
+                        run_id=run.id)   
+                    
+                    if run.status == "completed":
+                        break
 
-            thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
-            st.session_state['feedback3'] = thread_messages.data[0].content[0].text.value
+                    else:
+                        time.sleep(2)
+
+                thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
+                st.session_state['feedback3'] = thread_messages.data[0].content[0].text.value
+                st.session_state['score3'] = extract_score(st.session_state['feedback3'])
 
             st.write(st.session_state['feedback1'])
+            st.divider()
             st.write(st.session_state['feedback2'])
+            st.divider()
             st.write(st.session_state['feedback3'])
 
 # 학생 의견 작성 
     with st.container(border=True):
         st.caption("소감 및 느낀점")
-        st.error("전체적인 평가 연습 과정과 채점 및 피드백 결과에 대한 의견을 적어주세요. 결과에 대해 궁금한 점이나 이해가 가지 않는 부분, 혹은 단순한 소감이나 느낀점도 좋습니다. 의견을 입력한 뒤 등록 버튼을 눌러주세요. ")
+        st.error("채점 결과 및 피드백을 확인하고 새롭게 알게된 점이나 궁금한 점, 채점 결과 및 피드백에 대해 이해가 가지 않는 점 등 생각을 적어주세요.")
+        studentopinion1 = st.text_area("", label_visibility="collapsed", key="textarea1")
 
-        studentopinion = st.text_area("", label_visibility="collapsed")
+        st.error("서술형 평가 연습에 대해 선생님께 하고 싶은 말이나 좋았던 점, 아쉬웠던 점 등 전반적인 소감이나 느낀점을 적어주세요. 의견을 작성한 뒤 '소감 및 느낀점 등록하기' 버튼을 눌러주세요. ")
+        studentopinion2 = st.text_area("", label_visibility="collapsed", key="textarea2")
         studentopinionbutton = st.button("소감 및 느낀점 등록하기")
+
         if studentopinionbutton:
-            st.session_state['studentopinion'] = studentopinion
+            st.session_state['studentopinion1'] = studentopinion1
+            st.session_state['studentopinion2'] = studentopinion2
+
             st.success('소감 및 느낀점이 성공적으로 등록되었습니다.')
 
 # 자동 저장 기능
     with st.container(border=True):
         st.caption("저장")
-        st.error("마지막으로 저장 버튼을 누르면 서술형 평가 연습 결과가 저장됩니다.")
+        st.error("마지막으로 '서술형 평가 연습 결과 저장하기' 버튼을 누르면 결과가 저장됩니다.")
 
         saveresult = st.button("서술형 평가 연습 결과 저장하기")
         if saveresult:
@@ -388,8 +397,8 @@ def step3():
 
 # 저장하기
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            worksheet.append_row([current_time, st.session_state['settingname'], st.session_state['studentclass'], st.session_state['studentnumber'], st.session_state['studentname'], st.session_state['answer1'], st.session_state['feedback1'], st.session_state['answer2'], st.session_state['feedback2'], st.session_state['answer3'], st.session_state['feedback3'], st.session_state['studentopinion']])
-            st.success('서술형 평가 결과가 성공적으로 저장되었습니다.')
+            worksheet.append_row([current_time, st.session_state['settingname'], st.session_state['studentclass'], st.session_state['studentnumber'], st.session_state['studentname'], st.session_state['answer1'], st.session_state['score1'], st.session_state['feedback1'], st.session_state['answer2'], st.session_state['score2'], st.session_state['feedback2'], st.session_state['answer3'], st.session_state['score3'], st.session_state['feedback3'], st.session_state['studentopinion1'], st.session_state['studentopinion2']])
+            st.success('서술형 평가 연습 결과가 성공적으로 저장되었습니다.')
 
     st.write("---")
     col1, col2, col3 = st.columns([1, 1, 3])
