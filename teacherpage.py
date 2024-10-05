@@ -54,6 +54,10 @@ if 'feedbackinstruction' not in st.session_state:
     st.session_state['feedbackinstruction'] = ''
 if 'vectorstoreid' not in st.session_state:
     st.session_state['vectorstoreid'] = ''
+if 'assiapi' not in st.session_state:
+    st.session_state['assiapi'] = ''
+if 'vectorapi' not in st.session_state:
+    st.session_state['vectorapi'] = ''
 
 # 페이지 전환 함수 정의
 def next_page():
@@ -162,6 +166,7 @@ def step2():
             newvectorstore = client.beta.vector_stores.create(name="새로운 벡터 스토어")
             newvectorstoreid = newvectorstore.id
             st.session_state['vectorstoreid'] = newvectorstoreid
+            st.session_state['vectorapi'] = newvectorstoreid
 
 # 새로운 벡터 스토어를 기존 어시스턴트에 업데이트
             client.beta.assistants.update(
@@ -393,7 +398,8 @@ def step4():
             st.session_state['correctanswer1'], 
             st.session_state['correctanswer2'], 
             st.session_state['correctanswer3'], 
-            st.session_state['feedbackinstruction']])
+            st.session_state['feedbackinstruction'],
+            st.session_state['vectorapi']])
             st.success("설정이 성공적으로 저장되었습니다.")
 
     st.write("---")
