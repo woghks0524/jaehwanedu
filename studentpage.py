@@ -89,6 +89,8 @@ def prev_page():
 
 def go_home():
     st.session_state.page = 0
+# 제작자 이름 
+st.caption("이 웹 어플리케이션은 정재환(서울특별시교육청 소속 초등교사)에 의해 만들어졌습니다. 문의사항은 woghks0524jjh@gmail.com 또는 010-3393-0283으로 연락주세요.")
 
 # 홈페이지 구성 
 st.header(':100: 사회 5학년 2학기 서술형 평가 연습')
