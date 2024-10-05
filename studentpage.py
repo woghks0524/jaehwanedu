@@ -282,7 +282,7 @@ def step3():
                 client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content= '1번 문항은' + st.session_state['question1'] + '입니다.' + '학생 답안은' + st.session_state['answer1'] + '입니다.' + '1번 문항에 대한 학생 답안을 보고 채점 및 피드백을 생성해주세요. **instructions에 나와 있는 대로 생성합니다. 학생이 입력한 답안, 채점 결과, 피드백 내용을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. 【5:12†source】처럼 생긴 참조는 아예 보이지 않게 해주세요.')
+                content= '1번 문항은' + st.session_state['question1'] + '입니다.' + '학생 답안은' + st.session_state['answer1'] + '입니다.' + '1번 문항에 대한 학생 답안을 보고 채점 및 피드백을 생성해주세요. **instructions에 나와 있는 대로 생성합니다. **instructions에 따르면 채점 결과에 따라 생성하는 피드백의 내용이 달라지므로 꼭 확인하세요. 학생이 입력한 답안, 채점 결과, 피드백 내용을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. 【5:12†source】처럼 생긴 참조는 아예 보이지 않게 해주세요.')
 
                 run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],
@@ -307,7 +307,7 @@ def step3():
                 client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content='2번 문항은' + st.session_state['question2'] + '입니다.' + '학생 답안은' + st.session_state['answer2'] + '입니다.' + '2번 문항에 대한 학생 답안을 보고 채점 및 피드백을 생성해주세요. **instructions에 나와 있는 대로 생성합니다. 학생이 입력한 답안, 채점 결과, 피드백 내용을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. 【5:12†source】처럼 생긴 참조는 아예 보이지 않게 해주세요.')
+                content='2번 문항은' + st.session_state['question2'] + '입니다.' + '학생 답안은' + st.session_state['answer2'] + '입니다.' + '2번 문항에 대한 학생 답안을 보고 채점 및 피드백을 생성해주세요. **instructions에 나와 있는 대로 생성합니다. **instructions에 따르면 채점 결과에 따라 생성하는 피드백의 내용이 달라지므로 꼭 확인하세요. 학생이 입력한 답안, 채점 결과, 피드백 내용을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. 【5:12†source】처럼 생긴 참조는 아예 보이지 않게 해주세요.')
 
                 run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],
@@ -332,7 +332,7 @@ def step3():
                 client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content='3번 문항은' + st.session_state['question3'] + '입니다.' + '학생 답안은' + st.session_state['answer3'] + '입니다.' + '3번 문항에 대한 학생 답안을 보고 채점 및 피드백을 생성해주세요. **instructions에 나와 있는 대로 생성합니다. 학생이 입력한 답안, 채점 결과, 피드백 내용을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. 【5:12†source】처럼 생긴 참조는 아예 보이지 않게 해주세요.')
+                content='3번 문항은' + st.session_state['question3'] + '입니다.' + '학생 답안은' + st.session_state['answer3'] + '입니다.' + '3번 문항에 대한 학생 답안을 보고 채점 및 피드백을 생성해주세요. **instructions에 나와 있는 대로 생성합니다. **instructions에 따르면 채점 결과에 따라 생성하는 피드백의 내용이 달라지므로 꼭 확인하세요. 학생이 입력한 답안, 채점 결과, 피드백 내용을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. 【5:12†source】처럼 생긴 참조는 아예 보이지 않게 해주세요.')
 
                 run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],
