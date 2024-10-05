@@ -126,7 +126,7 @@ def step1():
         settingnameinput = st.button("평가 코드 등록하기")
         if settingnameinput:
             if is_code_duplicate(settingname):
-                        st.error(f"'{settingname}'은/는 이미 존재하는 평가 코드입니다. 다른 코드를 입력해 주세요.")
+                        st.error(f"'{settingname}'  은/는 이미 존재하는 평가 코드입니다. 다른 코드를 입력해 주세요.")
             else:
                 st.session_state['settingname'] = settingname
                 st.session_state['api_key'] = selected_api_key
