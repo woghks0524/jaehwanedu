@@ -25,12 +25,13 @@ st.set_page_config(layout="wide")
 # CSS 스타일을 사용하여 상단바와 메뉴 숨기기
 hide_streamlit_style = """
             <style>
-            #MainMenu {visibility: hidden;}
-            header {visibility: hidden;}
+            MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             </style>
             """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+# header {visibility: hidden;}
 
 # 세션 상태 초기화
 if 'page' not in st.session_state:
@@ -172,6 +173,28 @@ def step1():
                 for key, value in target_row.items():
                     st.session_state[key] = value
                 
+                client.beta.threads.messages.create(
+                thread_id=st.session_state['usingthread'],
+                role="user",
+                content='서술형 문항을 입력하겠습니다. 서술형 문항을 정확히 이해하고, 문항에서 요구하는 내용이 무엇인지 잘 생각하기 바랍니다.'
+                + '1번 문항은 <' + st.session_state['question1'] + '> 입니다.' 
+                + '2번 문항은 <' + st.session_state['question2'] + '> 입니다.'
+                + '3번 문항은 <' + st.session_state['question3'] + '> 입니다. 잘 기억하시길 바랍니다.')
+
+                client.beta.threads.messages.create(
+                thread_id=st.session_state['usingthread'],
+                role="user",
+                content='모범답안을 입력하겠습니다.'
+                + '1번 문항 모범답안은 <' + st.session_state['correctanswer1'] + '> 입니다.' 
+                + '2번 문항 모범답안은 <' + st.session_state['correctanswer2'] + '> 입니다.' 
+                + '3번 문항 모범답안은 <' + st.session_state['correctanswer3'] + '> 입니다. 잘 기억하시길 바랍니다.')
+
+                client.beta.threads.messages.create(
+                thread_id=st.session_state['usingthread'],
+                role="user",
+                content='평가 주의사항을 입력하겠습니다.'
+                + '평가 주의사항은 <' + st.session_state['feedbackinstruction'] + '> 입니다. 잘 기억하시길 바랍니다.')
+
                 st.success("평가를 성공적으로 불러왔습니다.")
                 
             else:
@@ -254,10 +277,11 @@ def step3():
             client.beta.threads.messages.create(
             thread_id=st.session_state['usingthread'],
             role="user",
-            content='1번 문항에 대한 학생 답안은 <' + st.session_state['answer1'] + 
-            '> 입니다. 2번 문항에 대한 학생 답안은 <' + st.session_state['answer2'] + 
-            '> 입니다. 3번 문항에 대한 학생 답안은 <' + st.session_state['answer3'] +'> 입니다.')
-
+            content='학생이 작성한 답안을 입력하겠습니다.'
+                    + '1번 문항에 대한 학생 답안은 <' + st.session_state['answer1'] + '> 입니다.' 
+                    + '2번 문항에 대한 학생 답안은 <' + st.session_state['answer2'] + '> 입니다.'
+                    + '3번 문항에 대한 학생 답안은 <' + st.session_state['answer3'] + '> 입니다. 잘 기억하시길 바랍니다.')
+            
             st.success('작성한 답안이 성공적으로 등록되었습니다.')
 
 # 채점 및 피드백 생성 
@@ -353,6 +377,7 @@ def step3():
                 st.session_state['feedback3'] = thread_messages.data[0].content[0].text.value
                 st.session_state['score3'] = extract_score(st.session_state['feedback3'])
 
+# 채점 결과 보이기
             st.write(st.session_state['feedback1'])
             st.divider()
             st.write(st.session_state['feedback2'])

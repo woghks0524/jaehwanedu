@@ -25,12 +25,14 @@ st.set_page_config(layout="wide")
 # CSS 스타일을 사용하여 상단바와 메뉴 숨기기
 hide_streamlit_style = """
             <style>
-            #MainMenu {visibility: hidden;}
-            header {visibility: hidden;}
+            MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             </style>
             """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+# header {visibility: hidden;}
+
 
 # 세션 상태 초기화
 if 'page' not in st.session_state:
@@ -174,6 +176,29 @@ def step1():
                 for key, value in target_row.items():
                     st.session_state[key] = value
                 
+                client.beta.threads.messages.create(
+                thread_id=st.session_state['usingthread'],
+                role="user",
+                content='서술형 문항을 입력하겠습니다. 서술형 문항을 정확히 이해하고, 문항에서 요구하는 내용이 무엇인지 잘 생각하기 바랍니다.'
+                + '1번 문항은 <' + st.session_state['question1'] + '> 입니다.' 
+                + '2번 문항은 <' + st.session_state['question2'] + '> 입니다.'
+                + '3번 문항은 <' + st.session_state['question3'] + '> 입니다. 잘 기억하시길 바랍니다.')
+
+                client.beta.threads.messages.create(
+                thread_id=st.session_state['usingthread'],
+                role="user",
+                content='모범답안을 입력하겠습니다.'
+                + '1번 문항 모범답안은 <' + st.session_state['correctanswer1'] + '> 입니다.' 
+                + '2번 문항 모범답안은 <' + st.session_state['correctanswer2'] + '> 입니다.' 
+                + '3번 문항 모범답안은 <' + st.session_state['correctanswer3'] + '> 입니다. 잘 기억하시길 바랍니다.')
+
+                client.beta.threads.messages.create(
+                thread_id=st.session_state['usingthread'],
+                role="user",
+                content='평가 주의사항을 입력하겠습니다.'
+                + '평가 주의사항은 <' + st.session_state['feedbackinstruction'] + '> 입니다. 잘 기억하시길 바랍니다.')
+
+
                 st.success("평가를 성공적으로 불러왔습니다.")
                 
             else:
@@ -256,9 +281,10 @@ def step3():
             client.beta.threads.messages.create(
             thread_id=st.session_state['usingthread'],
             role="user",
-            content='1번 문항에 대한 학생 답안은 <' + st.session_state['answer1'] + 
-            '> 입니다. 2번 문항에 대한 학생 답안은 <' + st.session_state['answer2'] + 
-            '> 입니다. 3번 문항에 대한 학생 답안은 <' + st.session_state['answer3'] +'> 입니다.')
+            content='학생이 작성한 답안을 입력하겠습니다.'
+                    + '1번 문항에 대한 학생 답안은 <' + st.session_state['answer1'] + '> 입니다.' 
+                    + '2번 문항에 대한 학생 답안은 <' + st.session_state['answer2'] + '> 입니다.'
+                    + '3번 문항에 대한 학생 답안은 <' + st.session_state['answer3'] + '> 입니다. 잘 기억하시길 바랍니다.')
 
             st.success('작성한 답안이 성공적으로 등록되었습니다.')
 
@@ -284,7 +310,7 @@ def step3():
                 client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content='1번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어를 검색해서 모든 파일 내용을 확인한 뒤, 채점을 진행합니다. 모범답안과 비교하여 학생 답안을 채점합니다. 반드시 파일 내용에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 않고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***긍정적인 부분, 개선점, 출처는 보여주지 않고, 오직 채점 결과만 보여주세요.')
+                content= '1번 문항은' + st.session_state['question1'] + '입니다.' + '학생 답안은' + st.session_state['answer1'] + '입니다.' + '1번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어를 검색해서 모든 파일 내용을 확인한 뒤, 채점을 진행합니다. 모범답안과 비교하여 학생 답안을 채점합니다. 반드시 파일 내용에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 않고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***긍정적인 부분, 개선점, 출처는 보여주지 않고, 오직 채점 결과만 보여주세요.')
 
                 run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],
@@ -306,10 +332,10 @@ def step3():
                 st.session_state['score1'] = extract_score(st.session_state['feedback1'])
 
             if 'question2' in st.session_state and st.session_state['question2']:
-                thread_message2 = client.beta.threads.messages.create(
+                client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content='2번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어를 검색해서 모든 파일 내용을 확인한 뒤, 채점을 진행합니다. 모범답안과 비교하여 학생 답안을 채점합니다. 반드시 파일 내용에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 않고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***긍정적인 부분, 개선점, 출처는 보여주지 않고, 오직 채점 결과만 보여주세요.')
+                content= '2번 문항은' + st.session_state['question2'] + '입니다.' + '학생 답안은' + st.session_state['answer2'] + '입니다.' + '2번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어를 검색해서 모든 파일 내용을 확인한 뒤, 채점을 진행합니다. 모범답안과 비교하여 학생 답안을 채점합니다. 반드시 파일 내용에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 않고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***긍정적인 부분, 개선점, 출처는 보여주지 않고, 오직 채점 결과만 보여주세요.')
 
                 run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],
@@ -334,7 +360,7 @@ def step3():
                 client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content='3번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어를 검색해서 모든 파일 내용을 확인한 뒤, 채점을 진행합니다. 모범답안과 비교하여 학생 답안을 채점합니다. 반드시 파일 내용에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 않고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***긍정적인 부분, 개선점, 출처는 보여주지 않고, 오직 채점 결과만 보여주세요.')
+                content= '3번 문항은' + st.session_state['question3'] + '입니다.' + '학생 답안은' + st.session_state['answer3'] + '입니다.' + '3번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어를 검색해서 모든 파일 내용을 확인한 뒤, 채점을 진행합니다. 모범답안과 비교하여 학생 답안을 채점합니다. 반드시 파일 내용에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 않고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***긍정적인 부분, 개선점, 출처는 보여주지 않고, 오직 채점 결과만 보여주세요.')
 
                 run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],
