@@ -22,7 +22,7 @@ new_thread = client.beta.threads.create()
 # 화면 페이지 크기 설정
 st.set_page_config(layout="wide")
 
-# CSS 스타일을 사용하여 상단바와 메뉴 숨기기
+# # CSS 스타일을 사용하여 상단바와 메뉴 숨기기
 hide_streamlit_style = """
             <style>
             MainMenu {visibility: hidden;}
@@ -32,7 +32,6 @@ hide_streamlit_style = """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # header {visibility: hidden;}
-
 
 # 세션 상태 초기화
 if 'page' not in st.session_state:
