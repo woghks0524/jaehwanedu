@@ -101,7 +101,6 @@ st.subheader("1단계. 평가코드 입력하기")
 st.info("평가 코드를 입력한 뒤 '평가코드 확인하기' 버튼을 눌러주세요.")
 
 with st.container(border=True):
-    st.caption("평가코드")
 
 # Google Sheets 인증 설정
     credentials_dict = json.loads(st.secrets["gcp"]["credentials"])
@@ -216,7 +215,6 @@ with st.container(border=True):
 st.subheader("3단계. 채점 결과 및 피드백 확인하기")
 
 with st.container(border=True):
-    st.caption("채점 결과 및 피드백")
     st.error("'채점 결과 및 피드백 확인하기' 버튼을 누르면 내가 작성한 답안에 대한 채점 결과와 피드백을 확인할 수 있습니다.")
 
 # 피드백에서 1~4점 범위의 점수를 추출하는 함수
@@ -370,7 +368,6 @@ with st.container(border=True):
 
 # 자동 저장 기능
 with st.container(border=True):
-    st.caption("저장")
     st.error("마지막으로 '서술형 평가 연습 결과 저장하기' 버튼을 누르면 결과가 저장됩니다.")
 
     saveresult = st.button("서술형 평가 연습 결과 저장하기")
