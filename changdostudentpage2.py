@@ -1,5 +1,5 @@
 # 5학년 4반
-# 피드백은 제공하지 않고 채점 결과만 제공함.
+# 채점 결과만 제공함.
 
 # 라이브러리
 import streamlit as st
@@ -21,18 +21,6 @@ new_thread = client.beta.threads.create()
 
 # 화면 페이지 크기 설정
 st.set_page_config(layout="wide")
-
-# # CSS 스타일을 사용하여 상단바와 메뉴 숨기기
-# hide_streamlit_style = """
-#             <style>
-#             MainMenu {visibility: hidden;}
-#             footer {visibility: hidden;}
-#             </style>
-#             """
-# st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
-# # header {visibility: hidden;}
-
 
 # 세션 상태 초기화
 if 'page' not in st.session_state:
@@ -91,9 +79,6 @@ def prev_page():
 
 def go_home():
     st.session_state.page = 0
-
-# 제작자 이름 
-# st.caption("이 웹 어플리케이션은 정재환(서울특별시교육청 소속 초등교사)에 의해 만들어졌습니다. 문의사항은 woghks0524jjh@gmail.com 또는 010-3393-0283으로 연락주세요.")
 
 # 홈페이지 구성 
 st.header(':100: 사회 5학년 2학기 서술형 평가 연습(4반)')
@@ -310,7 +295,7 @@ def step3():
                 client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content= '1번 문항은' + st.session_state['question1'] + '입니다.' + '학생 답안은' + st.session_state['answer1'] + '입니다.' + '1번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어를 검색해서 모든 파일 내용을 확인한 뒤, 채점을 진행합니다. 모범답안과 비교하여 학생 답안을 채점합니다. 반드시 파일 내용에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 않고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***긍정적인 부분, 개선점, 출처는 보여주지 않고, 오직 채점 결과만 보여주세요.')
+                content= '1번 문항은' + st.session_state['question1'] + '입니다.' + '학생 답안은' + st.session_state['answer1'] + '입니다.' + '1번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어를 검색해서 모든 파일 내용을 확인한 뒤, 채점을 진행합니다. 모범답안과 비교하여 학생 답안을 채점합니다. 반드시 파일 내용에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 않고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***긍정적인 부분, 개선점, 출처는 보여주지 않고, 오직 채점 결과만 보여주세요. 【5:12†source】처럼 생긴 참조는 아예 보이지 않게 해주세요.')
 
                 run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],
@@ -335,7 +320,7 @@ def step3():
                 client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content= '2번 문항은' + st.session_state['question2'] + '입니다.' + '학생 답안은' + st.session_state['answer2'] + '입니다.' + '2번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어를 검색해서 모든 파일 내용을 확인한 뒤, 채점을 진행합니다. 모범답안과 비교하여 학생 답안을 채점합니다. 반드시 파일 내용에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 않고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***긍정적인 부분, 개선점, 출처는 보여주지 않고, 오직 채점 결과만 보여주세요.')
+                content= '2번 문항은' + st.session_state['question2'] + '입니다.' + '학생 답안은' + st.session_state['answer2'] + '입니다.' + '2번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어를 검색해서 모든 파일 내용을 확인한 뒤, 채점을 진행합니다. 모범답안과 비교하여 학생 답안을 채점합니다. 반드시 파일 내용에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 않고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***긍정적인 부분, 개선점, 출처는 보여주지 않고, 오직 채점 결과만 보여주세요. 【5:12†source】처럼 생긴 참조는 아예 보이지 않게 해주세요.')
 
                 run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],
@@ -360,7 +345,7 @@ def step3():
                 client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content= '3번 문항은' + st.session_state['question3'] + '입니다.' + '학생 답안은' + st.session_state['answer3'] + '입니다.' + '3번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어를 검색해서 모든 파일 내용을 확인한 뒤, 채점을 진행합니다. 모범답안과 비교하여 학생 답안을 채점합니다. 반드시 파일 내용에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 않고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***긍정적인 부분, 개선점, 출처는 보여주지 않고, 오직 채점 결과만 보여주세요.')
+                content= '3번 문항은' + st.session_state['question3'] + '입니다.' + '학생 답안은' + st.session_state['answer3'] + '입니다.' + '3번 문항에 대한 학생 답안을 보고 채점 결과를 생성해주세요. 벡터 스토어를 검색해서 모든 파일 내용을 확인한 뒤, 채점을 진행합니다. 모범답안과 비교하여 학생 답안을 채점합니다. 반드시 파일 내용에 근거하여 채점을 진행합니다. 평가 문항, 학생 답안, 채점 결과가 포함되도록 보여주세요. 평가 주의사항을 지키면서 진행합니다. 평가 주의사항은 보여주지 않습니다. 표 형식으로 보여주지 않고, 학생이 입력한 답안과 평가 결과를 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요. ***긍정적인 부분, 개선점, 출처는 보여주지 않고, 오직 채점 결과만 보여주세요. 【5:12†source】처럼 생긴 참조는 아예 보이지 않게 해주세요.')
 
                 run = client.beta.threads.runs.create(
                     thread_id=st.session_state['usingthread'],

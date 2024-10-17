@@ -1,5 +1,5 @@
 # 5학년 5반
-# 채점 결과와 함께 피드백을 제공함.
+# 채점 결과와 피드백을 함께 제공함.
 
 # 라이브러리
 import streamlit as st
@@ -21,17 +21,6 @@ new_thread = client.beta.threads.create()
 
 # 화면 페이키 크기 설정
 st.set_page_config(layout="wide")
-
-# # CSS 스타일을 사용하여 상단바와 메뉴 숨기기
-# hide_streamlit_style = """
-#             <style>
-#             MainMenu {visibility: hidden;}
-#             footer {visibility: hidden;}
-#             </style>
-#             """
-# st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
-# # header {visibility: hidden;}
 
 # 세션 상태 초기화
 if 'page' not in st.session_state:
@@ -90,8 +79,6 @@ def prev_page():
 
 def go_home():
     st.session_state.page = 0
-# 제작자 이름 
-# st.caption("이 웹 어플리케이션은 정재환(서울특별시교육청 소속 초등교사)에 의해 만들어졌습니다. 문의사항은 woghks0524jjh@gmail.com 또는 010-3393-0283으로 연락주세요.")
 
 # 홈페이지 구성 
 st.header(':100: 사회 5학년 2학기 서술형 평가 연습(5반)')
