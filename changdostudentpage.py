@@ -69,6 +69,8 @@ if 'score2' not in st.session_state:
     st.session_state['score2'] = ''
 if 'score3' not in st.session_state:
     st.session_state['score3'] = ''
+if 'openclose' not in st.session_state:
+    st.session_state['openclose'] = 'open'
 
 # 페이지 전환 함수 정의
 def next_page():
@@ -252,7 +254,7 @@ def step3():
             answer3 = None
 
 # 답안 등록
-        answer_input_button = st.button('작성 답안 등록하기')
+        answer_input_button = st.button('작성 답안 등록하기', disabled=st.session_state['openclose'] == 'close')
         if answer1 is not None:
             st.session_state['answer1'] = answer1
         if answer2 is not None:
@@ -270,6 +272,7 @@ def step3():
                     + '3번 문항에 대한 학생 답안은 <' + st.session_state['answer3'] + '> 입니다. 잘 기억하시길 바랍니다.')
             
             st.success('작성한 답안이 성공적으로 등록되었습니다.')
+            st.session_state['openclose'] = 'close'
 
 # 채점 및 피드백 생성 
     with st.container(border=True):
@@ -412,6 +415,7 @@ def step3():
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             worksheet.append_row([current_time, st.session_state['settingname'], st.session_state['studentclass'], st.session_state['studentnumber'], st.session_state['studentname'], st.session_state['answer1'], st.session_state['score1'], st.session_state['feedback1'], st.session_state['answer2'], st.session_state['score2'], st.session_state['feedback2'], st.session_state['answer3'], st.session_state['score3'], st.session_state['feedback3'], st.session_state['studentopinion1'], st.session_state['studentopinion2']])
             st.success('서술형 평가 연습 결과가 성공적으로 저장되었습니다.')
+            st.session_state['openclose'] = 'open'
 
     st.write("---")
     col1, col2, col3 = st.columns([1, 1, 3])
