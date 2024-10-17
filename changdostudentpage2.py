@@ -258,28 +258,25 @@ def step3():
 # 답안 등록
 
 # 답안 등록하기 버튼 비활성화 로직
-        if st.session_state['openclose'] == 'close':
-            st.button('작성 답안 등록하기', disabled=True)
+        answer_input_button = st.button('작성 답안 등록하기', disabled=st.session_state['openclose'] == 'close')
+        if answer1 is not None:
+            st.session_state['answer1'] = answer1
+        if answer2 is not None:
+            st.session_state['answer2'] = answer2
+        if answer3 is not None:
+            st.session_state['answer3'] = answer3
 
-            answer_input_button = st.button('작성 답안 등록하기')
-            if answer1 is not None:
-                st.session_state['answer1'] = answer1
-            if answer2 is not None:
-                st.session_state['answer2'] = answer2
-            if answer3 is not None:
-                st.session_state['answer3'] = answer3
+        if answer_input_button:
+            client.beta.threads.messages.create(
+            thread_id=st.session_state['usingthread'],
+            role="user",
+            content='학생이 작성한 답안을 입력하겠습니다.'
+                    + '1번 문항에 대한 학생 답안은 <' + st.session_state['answer1'] + '> 입니다.' 
+                    + '2번 문항에 대한 학생 답안은 <' + st.session_state['answer2'] + '> 입니다.'
+                    + '3번 문항에 대한 학생 답안은 <' + st.session_state['answer3'] + '> 입니다. 잘 기억하시길 바랍니다.')
 
-            if answer_input_button:
-                client.beta.threads.messages.create(
-                thread_id=st.session_state['usingthread'],
-                role="user",
-                content='학생이 작성한 답안을 입력하겠습니다.'
-                        + '1번 문항에 대한 학생 답안은 <' + st.session_state['answer1'] + '> 입니다.' 
-                        + '2번 문항에 대한 학생 답안은 <' + st.session_state['answer2'] + '> 입니다.'
-                        + '3번 문항에 대한 학생 답안은 <' + st.session_state['answer3'] + '> 입니다. 잘 기억하시길 바랍니다.')
-
-                st.success('작성한 답안이 성공적으로 등록되었습니다.')
-                st.session_state['openclose'] = 'close'
+            st.success('작성한 답안이 성공적으로 등록되었습니다.')
+            st.session_state['openclose'] = 'close'
 
 
 # 채점 결과 생성 
