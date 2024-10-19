@@ -256,8 +256,6 @@ def step3():
             answer3 = None
 
 # 답안 등록
-
-# 답안 등록하기 버튼 비활성화 로직
         answer_input_button = st.button('작성 답안 등록하기', disabled=st.session_state['openclose'] == 'close')
         if answer1 is not None:
             st.session_state['answer1'] = answer1
@@ -276,8 +274,6 @@ def step3():
                     + '3번 문항에 대한 학생 답안은 <' + st.session_state['answer3'] + '> 입니다. 잘 기억하시길 바랍니다.')
 
             st.success('작성한 답안이 성공적으로 등록되었습니다.')
-            st.session_state['openclose'] = 'close'
-
 
 # 채점 결과 생성 
     with st.container(border=True):
@@ -297,6 +293,7 @@ def step3():
 
         feedback_output_button = st.button('채점 결과 확인하기')
         if feedback_output_button:
+            st.session_state['openclose'] = 'close'
             if 'question1' in st.session_state and st.session_state['question1']:
                 client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
