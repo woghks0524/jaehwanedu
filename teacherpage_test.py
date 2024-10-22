@@ -68,13 +68,22 @@ if 'q3_image_id' not in st.session_state:
 
 # 구글 드라이브 서비스 인증 설정
 def authenticate_services():
+    # 구글 드라이브 서비스 인증 설정
     scope = ['https://www.googleapis.com/auth/drive']
-    credentials = ServiceAccountCredentials.from_json_keyfile_dict(st.secrets["gcp"]["credentials"], scope)
+    
+    # st.secrets에서 credentials 가져오기 (문자열로 불러온 후 JSON 파싱)
+    credentials_dict = json.loads(st.secrets["gcp"]["credentials"])
+    
+    # ServiceAccountCredentials로 변환
+    credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_dict, scope)
+    
+    # 구글 드라이브 서비스 생성
     drive_service = build('drive', 'v3', credentials=credentials)
+    
     return drive_service
-
 # 구글 드라이브에 이미지 업로드 함수 정의
 def upload_image_to_drive(service, file):
+
 # 이미지 업로드 메타데이터 정의
     file_metadata = {
         'name': file.name,  # 파일 이름 설정
