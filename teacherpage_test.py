@@ -25,14 +25,14 @@ st.caption("이 웹 어플리케이션은 정재환(서울특별시교육청 소
 st.header(':memo:서술형 평가 설정 페이지')
 
 # CSS 스타일을 사용하여 상단바와 메뉴 숨기기
-hide_streamlit_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            header {visibility: hidden;}
-            footer {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+# hide_streamlit_style = """
+#             <style>
+#             #MainMenu {visibility: hidden;}
+#             header {visibility: hidden;}
+#             footer {visibility: hidden;}
+#             </style>
+#             """
+# st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # 세션 상태 초기화
 if 'page' not in st.session_state:
