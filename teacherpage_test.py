@@ -6,6 +6,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 import random
 import json
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 
 # API KEY, THREAD, client 생성
 api_keys = st.secrets["api"]["keys"]
@@ -57,6 +59,40 @@ if 'assiapi' not in st.session_state:
     st.session_state['assiapi'] = ''
 if 'vectorapi' not in st.session_state:
     st.session_state['vectorapi'] = ''
+if 'q1_image_id' not in st.session_state:
+    st.session_state['q1_image_id'] = ''
+if 'q2_image_id' not in st.session_state:
+    st.session_state['q2_image_id'] = ''
+if 'q3_image_id' not in st.session_state:
+    st.session_state['q3_image_id'] = ''
+
+# 구글 드라이브 서비스 인증 설정
+def authenticate_services():
+    scope = ['https://www.googleapis.com/auth/drive']
+    credentials = ServiceAccountCredentials.from_json_keyfile_dict(st.secrets["gcp"]["credentials"], scope)
+    drive_service = build('drive', 'v3', credentials=credentials)
+    return drive_service
+
+# 구글 드라이브에 이미지 업로드 함수 정의
+def upload_image_to_drive(service, file):
+# 이미지 업로드 메타데이터 정의
+    file_metadata = {
+        'name': file.name,  # 파일 이름 설정
+        'mimeType': 'image/jpeg'  # 이미지 MIME 타입 설정 (필요에 따라 변경 가능)
+    }
+    
+# 이미지 업로드
+    media = MediaFileUpload(file.name, mimetype=file.type)
+    uploaded_file = service.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields='id'
+    ).execute()
+    
+    return uploaded_file.get('id')
+
+# 인증 서비스 초기화
+drive_service = authenticate_services()
 
 # 페이지 전환 함수 정의
 def next_page():
@@ -294,17 +330,23 @@ def step4():
     new_thread = client.beta.threads.create()
     st.session_state['usingthread'] = new_thread.id
     
-# 문항 및 모범답안 입력
+ # 문항 및 모범답안 입력
     with st.container(border=True):
         st.caption("평가 문항 및 모범답안")
         col1, col2 = st.columns(2)
         with col1:
             question1 = st.text_area("1번 문항")
+            image1 = st.file_uploader("1번 문항 이미지 자료 첨부", type=["jpg", "jpeg", "png"], key="q1_image")
             st.divider()
+            
             question2 = st.text_area("2번 문항")
+            image2 = st.file_uploader("2번 문항 이미지 자료 첨부", type=["jpg", "jpeg", "png"], key="q2_image")
             st.divider()
+            
             question3 = st.text_area("3번 문항")
+            image3 = st.file_uploader("3번 문항 이미지 자료 첨부", type=["jpg", "jpeg", "png"], key="q3_image")
             st.divider()
+            
         with col2:
             correctanswer1 = st.text_area("1번 모범답안")
             st.divider()
@@ -313,17 +355,25 @@ def step4():
             correctanswer3 = st.text_area("3번 모범답안")
             st.divider()
 
-# 문항 및 모범답안 등록
-        question_input_button = st.button('평가 문항 및 모범답안 등록하기')
+    # 문항 및 모범답안 등록
+    question_input_button = st.button('평가 문항 및 모범답안 등록하기')
 
-        if question_input_button:
-            st.session_state['question1'] = question1
-            st.session_state['question2'] = question2
-            st.session_state['question3'] = question3
-            st.session_state['correctanswer1'] = correctanswer1
-            st.session_state['correctanswer2'] = correctanswer2
-            st.session_state['correctanswer3'] = correctanswer3
-            st.success("문항 및 모범답안이 성공적으로 등록되었습니다.")
+    if question_input_button:
+        st.session_state['question1'] = question1
+        st.session_state['question2'] = question2
+        st.session_state['question3'] = question3
+        st.session_state['correctanswer1'] = correctanswer1
+        st.session_state['correctanswer2'] = correctanswer2
+        st.session_state['correctanswer3'] = correctanswer3
+        
+        # 이미지가 업로드된 경우 구글 드라이브에 저장하고 ID를 세션 상태에 저장
+        for idx, (img, q_key) in enumerate([(image1, "q1_image_id"), (image2, "q2_image_id"), (image3, "q3_image_id")], 1):
+            if img:
+                image_id = upload_image_to_drive(drive_service, img)  # 구글 드라이브에 이미지 업로드
+                st.session_state[q_key] = image_id  # 세션 상태에 이미지 ID 저장
+                st.success(f"{idx}번 문항의 이미지가 성공적으로 등록되었습니다. 파일 ID: {image_id}")
+
+        st.success("문항 및 모범답안이 성공적으로 등록되었습니다.")
 
 # 평가 주의사항 입력
     with st.container(border=True):
