@@ -1,2 +1,10 @@
+[theme]
+base="dark"  # 다크 모드 활성화
+primaryColor="#1f77b4"
+backgroundColor="#0e1117"
+secondaryBackgroundColor="#262730"
+textColor="#ffffff"
+font = "sans serif"
+
 [server]
 fileWatcherType = "none"
