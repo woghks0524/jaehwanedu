@@ -377,10 +377,10 @@ def step3():
 # 학생 의견 작성 
     with st.container(border=True):
         st.caption("소감 및 느낀점")
-        st.error("채점 결과 및 피드백을 확인하고 새롭게 알게된 점이나 궁금한 점, 채점 결과 및 피드백에 대해 이해가 가지 않는 점 등 생각을 적어주세요.")
+        st.error("채점 결과 및 피드백을 확인하고 새롭게 알게된 점이나 궁금한 점, 채점 결과 및 피드백에 대해 이해가 가지 않는 점 등의 생각을 적어주세요.")
         studentopinion1 = st.text_area("", label_visibility="collapsed", key="textarea1")
 
-        st.error("서술형 평가 연습에 대해 선생님께 하고 싶은 말이나 좋았던 점, 아쉬웠던 점 등 전반적인 소감이나 느낀점을 적어주세요. 의견을 작성한 뒤 '소감 및 느낀점 등록하기' 버튼을 눌러주세요. ")
+        st.error("선생님께 하고 싶은 말이나 좋았던 점, 아쉬웠던 점 등의 서술형 평가 연습 과정에서 전반적으로 든 생각을 적어주세요.")
         studentopinion2 = st.text_area("", label_visibility="collapsed", key="textarea2")
         studentopinionbutton = st.button("소감 및 느낀점 등록하기")
 
