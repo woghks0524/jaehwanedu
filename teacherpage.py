@@ -326,7 +326,7 @@ def step4():
 # 설정 확인
     with st.container(border=True):
         st.caption("평가 확인")
-        testcheck = st.button("평가 확인")
+        testcheck = st.button("평가 확인하기")
 
         if testcheck:
             client.beta.threads.messages.create(
