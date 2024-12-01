@@ -12,8 +12,8 @@ import random
 import json
 import re
 import os
-os.environ.pop("HTTP_PROXY", None)
-os.environ.pop("HTTPS_PROXY", None)
+os.environ["HTTP_PROXY"] = "http://your_proxy:port"
+os.environ["HTTPS_PROXY"] = "https://your_proxy:port"
 
 # API KEY, THREAD, client 생성
 api_keys = st.secrets["api"]["keys"]
