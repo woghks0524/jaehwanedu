@@ -11,6 +11,9 @@ from datetime import datetime
 import random
 import json
 import re
+import os
+os.environ.pop("HTTP_PROXY", None)
+os.environ.pop("HTTPS_PROXY", None)
 
 # API KEY, THREAD, client 생성
 api_keys = st.secrets["api"]["keys"]
