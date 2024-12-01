@@ -11,14 +11,12 @@ from datetime import datetime
 import random
 import json
 import re
-import os
-os.environ["HTTP_PROXY"] = "http://your_proxy:port"
-os.environ["HTTPS_PROXY"] = "https://your_proxy:port"
 
 # API KEY, THREAD, client 생성
-api_keys = st.secrets["api"]["keys"]
-selected_api_key = random.choice(api_keys)
-client = OpenAI(api_key=selected_api_key)
+api_keys = "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"
+# st.secrets["api"]["keys"]
+# selected_api_key = random.choice(api_keys)
+client = OpenAI(api_key=selected_api_keys)
 assistant_id = 'asst_2FrZmOonHQCPO6EhXzQ6u3nr'
 new_thread = client.beta.threads.create()
 
